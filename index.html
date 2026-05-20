@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+
+  <body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jump Anywhere — Jumper.xyz Campaign System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #06060d;
+    --surface-1: #0d0d1a;
+    --surface-2: #12121f;
+    --surface-3: #1a1a2e;
+    --green: #00ff88;
+    --green-dim: #00cc6a;
+    --green-muted: rgba(0,255,136,0.12);
+    --green-border: rgba(0,255,136,0.22);
+    --blue: #0af;
+    --purple: #a78bfa;
+    --amber: #fbbf24;
+    --text: rgba(255,255,255,0.92);
+    --text-2: rgba(255,255,255,0.55);
+    --text-3: rgba(255,255,255,0.3);
+    --border: rgba(255,255,255,0.07);
+    --border-2: rgba(255,255,255,0.13);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--surface-1); }
+  ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+
+  /* ── GRID BG ── */
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .orb {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+    filter: blur(100px);
+  }
+
+  /* ── LAYOUT ── */
+  .wrap { position: relative; z-index: 1; }
+
+  /* ── SIDEBAR NAV ── */
+  .sidenav {
+    position: fixed; left: 0; top: 0; bottom: 0; width: 220px;
+    background: var(--surface-1);
+    border-right: 0.5px solid var(--border);
+    z-index: 100; display: flex; flex-direction: column;
+    padding: 2rem 0 1.5rem;
+    overflow-y: auto;
+  }
+
+  .sidenav-logo {
+    padding: 0 1.5rem 2rem;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+  .sidenav-logo .wordmark {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--green);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .sidenav-logo .dot {
+    width: 6px; height: 6px; background: var(--green); border-radius: 50%;
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  .sidenav-logo .sub {
+    font-size: 11px; color: var(--text-3); margin-top: 3px;
+    letter-spacing: .05em;
+  }
+
+  .nav-section {
+    font-size: 10px; font-weight: 500; letter-spacing: .15em;
+    text-transform: uppercase; color: var(--text-3);
+    padding: 0 1.5rem .5rem;
+    margin-top: .75rem;
+  }
+
+  .nav-link {
+    display: flex; align-items: center; gap: 9px;
+    padding: .55rem 1.5rem;
+    font-size: 13px; color: var(--text-2);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: all .18s;
+    cursor: pointer;
+  }
+  .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .nav-link.active { color: var(--green); border-left-color: var(--green); background: var(--green-muted); }
+  .nav-link .nav-icon { font-size: 14px; opacity: .7; }
+
+  .sidenav-footer {
+    margin-top: auto; padding: 1.5rem 1.5rem 0;
+    border-top: 0.5px solid var(--border);
+    padding-top: 1rem;
+    font-size: 11px; color: var(--text-3); line-height: 1.5;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    margin-left: 220px;
+    min-height: 100vh;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    padding: 4rem 3.5rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .section:last-child { border-bottom: none; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 5rem 3.5rem 4rem;
+    border-bottom: 0.5px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--green);
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 1.25rem;
+  }
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 5.5vw, 5rem);
+    font-weight: 800; line-height: 1.02;
+    letter-spacing: -.03em;
+    margin-bottom: .75rem;
+  }
+  .hero-title .accent { color: var(--green); }
+  .hero-sub {
+    font-size: 16px; color: var(--text-2);
+    max-width: 560px; line-height: 1.65;
+    margin-bottom: 2.5rem;
+  }
+  .hero-stats {
+    display: flex; gap: 3rem; flex-wrap: wrap;
+  }
+  .hero-stat-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem; font-weight: 700;
+    color: var(--text); display: block; line-height: 1;
+    margin-bottom: 4px;
+  }
+  .hero-stat-label {
+    font-size: 11px; color: var(--text-3);
+    letter-spacing: .09em; text-transform: uppercase;
+  }
+  .hero-badges {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 500; letter-spacing: .07em;
+    text-transform: uppercase; padding: 4px 10px;
+    border-radius: var(--radius-sm);
+  }
+  .badge-green { background: var(--green-muted); color: var(--green); border: 0.5px solid var(--green-border); }
+  .badge-blue { background: rgba(0,170,255,0.1); color: var(--blue); border: 0.5px solid rgba(0,170,255,0.2); }
+  .badge-purple { background: rgba(167,139,250,0.1); color: var(--purple); border: 0.5px solid rgba(167,139,250,0.2); }
+  .badge-amber { background: rgba(251,191,36,0.1); color: var(--amber); border: 0.5px solid rgba(251,191,36,0.2); }
+  .badge-gray { background: rgba(255,255,255,0.05); color: var(--text-2); border: 0.5px solid var(--border-2); }
+
+  /* ── SECTION HEADERS ── */
+  .sec-eyebrow {
+    font-size: 10px; font-weight: 500; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--green);
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .sec-eyebrow::after {
+    content: ''; flex: 1; height: .5px;
+    background: var(--border); max-width: 160px;
+  }
+  .sec-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.75rem; font-weight: 700;
+    letter-spacing: -.02em; margin-bottom: .5rem;
+  }
+  .sec-sub {
+    font-size: 14px; color: var(--text-2);
+    max-width: 620px; line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    transition: border-color .2s, transform .2s;
+  }
+  .card:hover { border-color: var(--border-2); }
+  .card-accent { border-color: var(--green-border); }
+
+  .card-label {
+    font-size: 10px; font-weight: 500; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--text-3);
+    margin-bottom: .6rem;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem; font-weight: 700;
+    color: var(--text); margin-bottom: .4rem;
+    line-height: 1.2;
+  }
+  .card-body {
+    font-size: 13px; color: var(--text-2); line-height: 1.6;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+
+  /* ── METRICS ── */
+  .metric-card {
+    background: var(--surface-3);
+    border-radius: var(--radius-md);
+    padding: 1.1rem 1.25rem;
+  }
+  .metric-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem; font-weight: 700;
+    color: var(--text); display: block; line-height: 1;
+    margin-bottom: 5px;
+  }
+  .metric-val.green { color: var(--green); }
+  .metric-label { font-size: 12px; color: var(--text-3); }
+
+  /* ── KV ROWS ── */
+  .kv { display: flex; justify-content: space-between; align-items: baseline;
+    padding: 7px 0; border-bottom: 0.5px solid var(--border); gap: 12px;
+    font-size: 13px; }
+  .kv:last-child { border-bottom: none; }
+  .kv-key { color: var(--text-2); flex-shrink: 0; }
+  .kv-val { color: var(--text); font-weight: 500; text-align: right; }
+  .kv-val.green { color: var(--green); }
+  .kv-val.muted { color: var(--text-3); font-weight: 400; font-size: 12px; }
+
+  /* ── DIVIDER ── */
+  .divider { height: 0.5px; background: var(--border); margin: 2rem 0; }
+
+  /* ── QUOTE BLOCK ── */
+  .quote-block {
+    border-left: 2px solid var(--green);
+    padding: 1rem 1.5rem;
+    background: var(--green-muted);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    margin: 1rem 0;
+  }
+  .quote-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem; font-weight: 700;
+    color: var(--text); line-height: 1.3;
+  }
+  .quote-sub { font-size: 12px; color: var(--text-3); margin-top: 5px; }
+
+  /* ── IMAGE PLACEHOLDER ── */
+  .img-placeholder {
+    border-radius: var(--radius-md);
+    border: 0.5px dashed var(--green-border);
+    background: var(--green-muted);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    gap: 10px;
+    position: relative; overflow: hidden;
+  }
+  .img-placeholder::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.04) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  .img-placeholder-icon { font-size: 2rem; position: relative; }
+  .img-placeholder-title {
+    font-family: 'Syne', sans-serif;
+    font-size: .9rem; font-weight: 700;
+    color: var(--green); position: relative;
+  }
+  .img-placeholder-desc {
+    font-size: 12px; color: var(--text-3);
+    line-height: 1.5; position: relative;
+    max-width: 260px;
+  }
+  .img-placeholder-spec {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--green);
+    border: 0.5px solid var(--green-border);
+    padding: 3px 10px; border-radius: 4px;
+    position: relative;
+  }
+  .img-instructions {
+    background: var(--surface-3);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    margin-top: 10px;
+    border: 0.5px solid var(--border);
+  }
+  .img-instructions-title {
+    font-size: 11px; font-weight: 500; color: var(--text-2);
+    letter-spacing: .08em; text-transform: uppercase;
+    margin-bottom: .5rem;
+  }
+  .img-instructions ol { padding-left: 1.2rem; }
+  .img-instructions li { font-size: 12px; color: var(--text-3); line-height: 1.7; }
+  .img-instructions code {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--green);
+    background: var(--green-muted);
+    padding: 1px 5px; border-radius: 3px;
+  }
+
+  /* ── PHASE BARS ── */
+  .phase-wrap { margin-bottom: 1.1rem; }
+  .phase-row { display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text-2); margin-bottom: 5px; }
+  .phase-track {
+    height: 8px; background: var(--surface-3);
+    border-radius: 4px; overflow: hidden; display: flex; gap: 2px;
+  }
+  .phase-seg { height: 100%; border-radius: 2px; }
+
+  /* ── PROOF STRIP ── */
+  .proof-strip {
+    background: var(--surface-3);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    border-left: 2px solid var(--green);
+  }
+  .proof-strip-label {
+    font-size: 10px; color: var(--green); letter-spacing: .12em;
+    text-transform: uppercase; margin-bottom: .4rem;
+  }
+  .proof-strip-text { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+  .proof-strip-text strong { color: var(--text); font-weight: 500; }
+
+  /* ── CONCEPT CARDS (video) ── */
+  .concept-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 0.5px solid var(--border-2);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--text-3);
+    flex-shrink: 0;
+  }
+
+  /* ── 30-DAY PLAN ── */
+  .week-block { margin-bottom: 1.5rem; }
+  .week-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: var(--surface-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: border-color .2s;
+    user-select: none;
+  }
+  .week-header:hover { border-color: var(--border-2); }
+  .week-header.open { border-color: var(--green-border); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .week-header-left { display: flex; align-items: center; gap: 12px; }
+  .week-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--green);
+    border: 0.5px solid var(--green-border);
+    padding: 3px 10px; border-radius: 4px;
+    background: var(--green-muted);
+  }
+  .week-title {
+    font-family: 'Syne', sans-serif;
+    font-size: .95rem; font-weight: 700; color: var(--text);
+  }
+  .week-sub { font-size: 12px; color: var(--text-3); }
+  .week-chevron {
+    font-size: 12px; color: var(--text-3);
+    transition: transform .25s;
+  }
+  .week-header.open .week-chevron { transform: rotate(180deg); }
+
+  .week-body {
+    display: none;
+    border: 0.5px solid var(--green-border);
+    border-top: none;
+    border-bottom-left-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .week-body.open { display: block; }
+
+  .day-row {
+    border-bottom: 0.5px solid var(--border);
+    padding: 1rem 1.25rem;
+    background: var(--surface-1);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .day-row:last-child { border-bottom: none; }
+  .day-row:hover { background: var(--surface-2); }
+  .day-row-header {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .day-num-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-3);
+    width: 28px; flex-shrink: 0;
+    text-align: center;
+  }
+  .day-hook {
+    font-size: 13px; font-weight: 500; color: var(--text);
+    flex: 1;
+  }
+  .day-format {
+    font-size: 10px; color: var(--text-3);
+    border: 0.5px solid var(--border);
+    padding: 2px 8px; border-radius: 4px;
+    white-space: nowrap;
+  }
+  .day-chevron { font-size: 10px; color: var(--text-3); transition: transform .2s; }
+  .day-row.open .day-chevron { transform: rotate(180deg); }
+
+  .day-detail {
+    display: none;
+    padding: .75rem 1.25rem .75rem 2.75rem;
+    background: var(--surface-1);
+    border-top: 0.5px solid var(--border);
+  }
+  .day-detail.open { display: block; }
+  .day-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: .75rem; }
+  @media (max-width: 700px) { .day-detail-grid { grid-template-columns: 1fr; } }
+  .day-detail-item { }
+  .day-detail-label {
+    font-size: 10px; color: var(--text-3); letter-spacing: .1em;
+    text-transform: uppercase; margin-bottom: 3px;
+  }
+  .day-detail-val { font-size: 12px; color: var(--text-2); line-height: 1.55; }
+  .day-detail-val.caption { font-style: italic; color: var(--text); }
+  .hashtags {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: .5rem;
+  }
+  .hashtag {
+    font-size: 11px; color: var(--green);
+    background: var(--green-muted);
+    border: 0.5px solid var(--green-border);
+    padding: 2px 8px; border-radius: 4px;
+  }
+
+  /* ── CHANNEL TABLE ── */
+  .channel-row {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: .875rem 0; border-bottom: 0.5px solid var(--border);
+    font-size: 13px;
+  }
+  .channel-row:last-child { border-bottom: none; }
+  .channel-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .channel-name { font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .channel-detail { color: var(--text-2); line-height: 1.5; }
+  .channel-pct {
+    margin-left: auto; flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; color: var(--green);
+    background: var(--green-muted);
+    padding: 3px 10px; border-radius: 4px;
+    border: 0.5px solid var(--green-border);
+  }
+
+  /* ── MESSAGING HIERARCHY ── */
+  .msg-level {
+    display: flex; gap: 14px; align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  .msg-level-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--surface-3); border: 0.5px solid var(--border-2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--text-3); flex-shrink: 0; margin-top: 2px;
+  }
+  .msg-level-content { flex: 1; }
+  .msg-level-title { font-size: 13px; font-weight: 500; color: var(--text-2); margin-bottom: 4px; }
+  .msg-level-quote {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem; font-weight: 700; color: var(--text);
+    border-left: 2px solid var(--green);
+    padding-left: .75rem; margin-bottom: 4px;
+  }
+  .msg-level-desc { font-size: 12px; color: var(--text-3); line-height: 1.55; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+
+  .fade-up { animation: fadeUp .6s ease both; }
+  .delay-1 { animation-delay: .1s; }
+  .delay-2 { animation-delay: .2s; }
+  .delay-3 { animation-delay: .3s; }
+  .delay-4 { animation-delay: .4s; }
+
+  /* ── TOC progress bar ── */
+  .progress-bar {
+    position: fixed; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--border); z-index: 200;
+  }
+  .progress-fill {
+    height: 100%; background: var(--green);
+    width: 0%; transition: width .1s;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .sidenav { display: none; }
+    .main { margin-left: 0; }
+    .section, .hero { padding: 2.5rem 1.5rem; }
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .sidenav { display: none; }
+    .main { margin-left: 0; }
+    .week-body { display: block !important; }
+    .day-detail { display: block !important; }
+  }
+
+  /* ── UTILITY ── */
+  .mono { font-family: 'DM Mono', monospace; }
+  .green { color: var(--green); }
+  .muted { color: var(--text-2); }
+  .small { font-size: 12px; }
+  .mt-1 { margin-top: .5rem; }
+  .mt-2 { margin-top: 1rem; }
+  .mt-3 { margin-top: 1.5rem; }
+  .mb-1 { margin-bottom: .5rem; }
+  .mb-2 { margin-bottom: 1rem; }
+  .mb-3 { margin-bottom: 1.5rem; }
+  .tag-strip { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .tag { font-size: 11px; color: var(--text-3); border: 0.5px solid var(--border); border-radius: 4px; padding: 2px 8px; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="grid-bg"></div>
+<div class="orb" style="width:500px;height:500px;background:rgba(0,255,136,0.05);top:-200px;right:-100px;"></div>
+<div class="orb" style="width:400px;height:400px;background:rgba(0,170,255,0.04);bottom:200px;left:300px;"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidenav">
+  <div class="sidenav-logo">
+    <div class="wordmark"><div class="dot"></div>Jumper.xyz</div>
+    <div class="sub">Jump Anywhere · Campaign System</div>
+  </div>
+
+  <div class="nav-section">Overview</div>
+  <a class="nav-link active" href="#overview">
+    <span class="nav-icon">◈</span> Campaign platform
+  </a>
+  <a class="nav-link" href="#assets">
+    <span class="nav-icon">◫</span> Visual assets
+  </a>
+
+  <div class="nav-section">Strategy</div>
+  <a class="nav-link" href="#messaging">
+    <span class="nav-icon">◎</span> Messaging hierarchy
+  </a>
+  <a class="nav-link" href="#taglines">
+    <span class="nav-icon">◉</span> Tagline system
+  </a>
+  <a class="nav-link" href="#audiences">
+    <span class="nav-icon">◈</span> Audience segments
+  </a>
+
+  <div class="nav-section">Execution</div>
+  <a class="nav-link" href="#mediaplan">
+    <span class="nav-icon">◫</span> 12-week media plan
+  </a>
+  <a class="nav-link" href="#channels">
+    <span class="nav-icon">◎</span> Channel breakdown
+  </a>
+  <a class="nav-link" href="#concepts">
+    <span class="nav-icon">◉</span> Video concepts
+  </a>
+  <a class="nav-link" href="#content30">
+    <span class="nav-icon">◈</span> 30-day content plan
+  </a>
+
+  <div class="nav-section">Creative</div>
+  <a class="nav-link" href="#assets-creative">
+    <span class="nav-icon">◫</span> Creative formats
+  </a>
+  <a class="nav-link" href="#kpis">
+    <span class="nav-icon">◎</span> KPIs
+  </a>
+
+  <div class="sidenav-footer">
+    Prepared for Jumper.xyz team<br>
+    Campaign: Q3 2026<br>
+    Version 1.0
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main wrap">
+
+  <!-- ═══════════════════════════════════════════
+       HERO
+  ════════════════════════════════════════════ -->
+  <section class="hero" id="overview">
+    <div class="hero-eyebrow">
+      <span style="width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block;animation:pulse 2.2s infinite;"></span>
+      Jumper.xyz · Campaign System · Q3 2026
+    </div>
+    <h1 class="hero-title fade-up">
+      Jump<br><span class="accent">Anywhere.</span>
+    </h1>
+    <p class="hero-sub fade-up delay-1">
+      A full campaign system for Jumper.xyz — messaging hierarchy, tagline system, 12-week media plan, 5 video concepts, and a 30-day content strategy. Built around one idea: DeFi has no borders. Neither should you.
+    </p>
+    <div class="hero-badges fade-up delay-2">
+      <span class="badge badge-green">Brand awareness</span>
+      <span class="badge badge-blue">Cross-chain DeFi</span>
+      <span class="badge badge-purple">Q3 2026</span>
+      <span class="badge badge-amber">Astronaut platform</span>
+      <span class="badge badge-gray">#JumpAnywhere</span>
+    </div>
+    <div class="hero-stats fade-up delay-3">
+      <div><span class="hero-stat-val">12 wk</span><span class="hero-stat-label">Campaign flight</span></div>
+      <div><span class="hero-stat-val">$33B+</span><span class="hero-stat-label">Volume proof</span></div>
+      <div><span class="hero-stat-val">61</span><span class="hero-stat-label">Chains supported</span></div>
+      <div><span class="hero-stat-val">1M+</span><span class="hero-stat-label">Pass holders</span></div>
+      <div><span class="hero-stat-val">30</span><span class="hero-stat-label">Days of content</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CAMPAIGN PLATFORM
+  ════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="sec-eyebrow">Campaign platform</div>
+    <h2 class="sec-title">The big idea</h2>
+    <p class="sec-sub">Everything in this campaign flows from one insight: DeFi is extraordinary technology trapped inside a terrible experience. Jumper is the experience fix. The campaign makes that emotional.</p>
+
+    <div class="card card-accent mb-3">
+      <div class="kv"><span class="kv-key">Core idea</span><span class="kv-val">DeFi has no borders. Neither should you.</span></div>
+      <div class="kv"><span class="kv-key">Campaign theme</span><span class="kv-val">Freedom of movement across all chains</span></div>
+      <div class="kv"><span class="kv-key">Hero metaphor</span><span class="kv-val">The astronaut — fearless navigator of unmapped territory</span></div>
+      <div class="kv"><span class="kv-key">Emotional hook</span><span class="kv-val">Empowerment — you can go anywhere, do anything onchain</span></div>
+      <div class="kv"><span class="kv-key">Functional proof</span><span class="kv-val">61 chains · 29 bridges · $33B+ volume · zero Jumper fees</span></div>
+      <div class="kv"><span class="kv-key">Visual world</span><span class="kv-val">Deep space · chain bridges as light highways · neon green on black</span></div>
+    </div>
+
+    <div class="proof-strip mt-2">
+      <div class="proof-strip-label">Proof point</div>
+      <div class="proof-strip-text">
+        In January 2026 alone, <strong>127,000 wallets moved $1.36B</strong> through Jumper — during slower market conditions. Swaps over $100k now represent <strong>41% of monthly volume</strong>, up from 29%. Smart money found it. The campaign makes sure everyone else does too.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       VISUAL ASSETS
+  ════════════════════════════════════════════ -->
+  <section class="section" id="assets">
+    <div class="sec-eyebrow">Visual assets</div>
+    <h2 class="sec-title">AI-generated campaign imagery</h2>
+    <p class="sec-sub">4 hero images generated for the Jump Anywhere campaign. Replace placeholders below with your downloaded Higgsfield assets. File naming convention shown for each.</p>
+
+    <div class="grid-2 mb-3">
+
+      <div>
+        <div class="img-placeholder" style="height: 200px;">
+          <div class="img-placeholder-icon">🚀</div>
+          <div class="img-placeholder-title">Hero Campaign Poster</div>
+          <div class="img-placeholder-desc">Astronaut at the edge of a void — glowing chain bridges extending outward in all directions. Cinematic, IMAX-quality. Ultra dark.</div>
+          <div class="img-placeholder-spec">16:9 · 2K · hero-poster.jpg</div>
+        </div>
+      <!-- HERO CAMPAIGN POSTER -->
+<div>
+  <img 
+    src="https://i.pinimg.com/736x/e9/33/6d/e9336df849740dc2123a9bf74b956eb2.jpg"
+    alt="Hero Campaign Poster"
+    style="width:100%; height:100%; object-fit:cover; border-radius:10px;"
+  >
+</div>
+         
+     
+
+      <div>
+        <div class="img-placeholder" style="height: 200px;">
+          <div class="img-placeholder-icon">📱</div>
+          <div class="img-placeholder-title">Twitter/X Vertical Ad</div>
+          <div class="img-placeholder-desc">Typographic poster — massive JUMP / ANYWHERE with astronaut silhouette mid-leap. Swiss editorial meets sci-fi. Electric green on black.</div>
+          <div class="img-placeholder-spec">9:16 · 2K · twitter-vertical.jpg</div>
+        </div>
+       
+        
+  <img 
+    src="https://i.pinimg.com/736x/00/ac/8d/00ac8d87d348459912ecde9af8de1f63.jpg"
+    alt="Twitter/X Vertical Ad"
+    style="width:100%; height:100%; object-fit:cover; border-radius:10px;"
+  >
+</div>
+        
+      <div>
+        <div class="img-placeholder" style="height: 200px;">
+          <div class="img-placeholder-icon">🌆</div>
+          <div class="img-placeholder-title">OOH Billboard Mockup</div>
+          <div class="img-placeholder-desc">Rain-soaked city night — massive digital billboard displaying astronaut leaping between chains. Blade Runner meets DeFi. Square format.</div>
+          <div class="img-placeholder-spec">1:1 · 2K · ooh-billboard.jpg</div>
+        </div>
+        <div class="img-instructions mt-1">
+          <div class="img-instructions-title">To embed</div>
+       <!-- OOH BILLBOARD MOCKUP -->
+<div>
+  <img 
+    src="https://i.pinimg.com/736x/bb/ac/44/bbac44cee0635e255602bf9ac4f0da7c.jpg"
+    alt="OOH Billboard Mockup"
+    style="width:100%; height:100%; object-fit:cover; border-radius:10px;"
+  >
+</div>
+          
+      </div>
+
+      <div>
+        <div class="img-placeholder" style="height: 200px;">
+          <div class="img-placeholder-icon">💬</div>
+          <div class="img-placeholder-title">Discord Community Banner</div>
+          <div class="img-placeholder-desc">Astronaut helmet close-up reflecting chain networks in visor. Split dark/glow composition. JUMP ANYWHERE typography. Wide panoramic.</div>
+          <div class="img-placeholder-spec">16:9 · 2K · discord-banner.jpg</div>
+        </div>
+      <!-- DISCORD COMMUNITY BANNER -->
+<div>
+  <img 
+    src="https://i.pinimg.com/736x/26/54/56/26545692a00fed703595029cc2e7a2dd.jpg"
+    alt="Discord Community Banner"
+    style="width:100%; height:100%; object-fit:cover; border-radius:10px;"
+  >
+</div>
+        
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       MESSAGING HIERARCHY
+  ════════════════════════════════════════════ -->
+  <section class="section" id="messaging">
+    <div class="sec-eyebrow">Messaging hierarchy</div>
+    <h2 class="sec-title">What we say, and when</h2>
+    <p class="sec-sub">Four levels of messaging — each serves a different function. Level 1 never changes. Levels 2–4 adapt by channel, audience, and phase.</p>
+
+    <div class="mb-3">
+      <div class="msg-level">
+        <div class="msg-level-num">1</div>
+        <div class="msg-level-content">
+          <div class="msg-level-title">Brand promise — always on, every placement</div>
+          <div class="msg-level-quote">Swap any token. From here to anywhere.</div>
+          <div class="msg-level-desc">The foundational statement. Appears in every placement, every channel, every phase. Communicates universal access in plain language. Never changes.</div>
+        </div>
+      </div>
+
+      <div class="msg-level">
+        <div class="msg-level-num">2</div>
+        <div class="msg-level-content">
+          <div class="msg-level-title">Campaign line — campaign-specific hero expression</div>
+          <div class="msg-level-quote">Jump Anywhere.</div>
+          <div class="msg-level-desc">Two words. The brand name embedded as a verb. Works as headline, CTA, hashtag, and rallying cry simultaneously. Primary expression for all paid media.</div>
+        </div>
+      </div>
+
+      <div class="msg-level">
+        <div class="msg-level-num">3</div>
+        <div class="msg-level-content">
+          <div class="msg-level-title">Supporting messages — audience-tailored variants</div>
+          <div class="grid-3 mt-1">
+            <div class="card">
+              <span class="badge badge-green mb-1" style="display:inline-block;">DeFi natives</span>
+              <div class="card-body">"Best route. Every time. Zero Jumper fees."</div>
+              <div class="tag-strip"><span class="tag">Twitter/X</span><span class="tag">Discord</span></div>
+            </div>
+            <div class="card">
+              <span class="badge badge-purple mb-1" style="display:inline-block;">Chain curious</span>
+              <div class="card-body">"One app. Every chain. No research needed."</div>
+              <div class="tag-strip"><span class="tag">YouTube</span><span class="tag">Reddit</span></div>
+            </div>
+            <div class="card">
+              <span class="badge badge-amber mb-1" style="display:inline-block;">Builders</span>
+              <div class="card-body">"Power your app with 61-chain liquidity."</div>
+              <div class="tag-strip"><span class="tag">GitHub</span><span class="tag">Dev Twitter</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg-level">
+        <div class="msg-level-num">4</div>
+        <div class="msg-level-content">
+          <div class="msg-level-title">Proof points — credibility layer, used in conversion phases</div>
+          <div class="grid-2 mt-1">
+            <div class="proof-strip"><div class="proof-strip-label">Volume</div><div class="proof-strip-text"><strong>$33B+ total</strong> and <strong>$1.36B in January 2026</strong> alone — despite slower market conditions.</div></div>
+            <div class="proof-strip"><div class="proof-strip-label">Whale signal</div><div class="proof-strip-text">Swaps over <strong>$100k now represent 41%</strong> of monthly volume, up from 29%. Smart money is already here.</div></div>
+            <div class="proof-strip"><div class="proof-strip-label">Security</div><div class="proof-strip-text">LI.FI smart contracts audited by <strong>Spearbit, Code4rena, and Quantstamp</strong>. 4× independent audits.</div></div>
+            <div class="proof-strip"><div class="proof-strip-label">Scale</div><div class="proof-strip-text"><strong>127,000 wallets</strong> in January 2026. <strong>1 million wallets</strong> in Loyalty Pass across two seasons.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TAGLINE SYSTEM
+  ════════════════════════════════════════════ -->
+  <section class="section" id="taglines">
+    <div class="sec-eyebrow">Tagline system</div>
+    <h2 class="sec-title">Every line, every placement</h2>
+    <p class="sec-sub">A complete copy system covering every surface where Jumper communicates — from homepage H1 to error states. Consistent tone, adapted register.</p>
+
+    <div class="card mb-2">
+      <div class="kv"><span class="kv-key">Hero tagline</span><span class="kv-val green">Jump Anywhere.</span></div>
+      <div class="kv"><span class="kv-key">Brand promise</span><span class="kv-val">Swap any token. From here to anywhere.</span></div>
+      <div class="kv"><span class="kv-key">Homepage H1</span><span class="kv-val">Crypto's Everything Exchange.</span></div>
+      <div class="kv"><span class="kv-key">Twitter/X bio</span><span class="kv-val">Crypto's everything exchange. 61 chains. Jump.</span></div>
+      <div class="kv"><span class="kv-key">Ad headline A</span><span class="kv-val">Stop hopping bridges. Start jumping.</span></div>
+      <div class="kv"><span class="kv-key">Ad headline B</span><span class="kv-val">Your ETH wants to be on Base. Let it jump.</span></div>
+      <div class="kv"><span class="kv-key">Ad headline C</span><span class="kv-val">61 chains. 29 bridges. One jump.</span></div>
+      <div class="kv"><span class="kv-key">Ad headline D</span><span class="kv-val">127,000 wallets jumped in January. You next?</span></div>
+      <div class="kv"><span class="kv-key">CTA — primary</span><span class="kv-val green">Jump now →</span></div>
+      <div class="kv"><span class="kv-key">CTA — secondary</span><span class="kv-val">Find your route</span></div>
+      <div class="kv"><span class="kv-key">Hashtag</span><span class="kv-val">#JumpAnywhere</span></div>
+      <div class="kv"><span class="kv-key">Discord welcome</span><span class="kv-val">You've landed. Now jump anywhere.</span></div>
+      <div class="kv"><span class="kv-key">Earn hook</span><span class="kv-val">Your idle capital shouldn't be sleeping.</span></div>
+      <div class="kv"><span class="kv-key">Portfolio hook</span><span class="kv-val">Stop watching. Start playing.</span></div>
+      <div class="kv"><span class="kv-key">Security hook</span><span class="kv-val">Trust the transaction history, not the marketing.</span></div>
+      <div class="kv"><span class="kv-key">One-liner (explain to non-DeFi)</span><span class="kv-val">Google Maps — but for money moving between blockchains.</span></div>
+      <div class="kv"><span class="kv-key">Error state (on-brand)</span><span class="kv-val">Even astronauts need a sec. Hold tight.</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       AUDIENCE SEGMENTS
+  ════════════════════════════════════════════ -->
+  <section class="section" id="audiences">
+    <div class="sec-eyebrow">Audience segments</div>
+    <h2 class="sec-title">Who we're talking to</h2>
+    <p class="sec-sub">Three distinct segments, each with a different pain point, channel mix, and message register. The campaign runs all three in parallel with tailored creative.</p>
+
+    <div class="grid-3 mb-3">
+      <div class="card">
+        <span class="badge badge-green mb-2" style="display:inline-block;">Segment A</span>
+        <div class="card-title">The Chain Hopper</div>
+        <div class="card-body">Active DeFi traders, 25–38, moving assets across chains weekly. Pain: wasted hours comparing bridges and overpaying gas. They already know what a DEX aggregator is — they want the best one.</div>
+        <div class="tag-strip"><span class="tag">Twitter/X</span><span class="tag">Discord</span><span class="tag">DeFi forums</span></div>
+        <div class="kv mt-2"><span class="kv-key">Message register</span><span class="kv-val muted">Technical · data-led</span></div>
+        <div class="kv"><span class="kv-key">Key proof</span><span class="kv-val muted">41% whale volume · zero Jumper fees</span></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-purple mb-2" style="display:inline-block;">Segment B</span>
+        <div class="card-title">The Chain Curious</div>
+        <div class="card-body">Crypto holders with one or two chains who want to explore but find bridges confusing and risky. They have the assets — they lack the confidence. Jumper's UX was built for them.</div>
+        <div class="tag-strip"><span class="tag">Twitter/X</span><span class="tag">YouTube</span><span class="tag">Reddit</span></div>
+        <div class="kv mt-2"><span class="kv-key">Message register</span><span class="kv-val muted">Simple · reassuring</span></div>
+        <div class="kv"><span class="kv-key">Key proof</span><span class="kv-val muted">127k wallets · 4× audited · non-custodial</span></div>
+      </div>
+      <div class="card">
+        <span class="badge badge-amber mb-2" style="display:inline-block;">Segment C</span>
+        <div class="card-title">The Web3 Builder</div>
+        <div class="card-body">Dev teams integrating cross-chain UX into wallets, dApps, and protocols. Pain: managing multiple bridge APIs is slow and brittle. LI.FI already powers Coinbase Wallet, MetaMask, and Phantom.</div>
+        <div class="tag-strip"><span class="tag">GitHub</span><span class="tag">Dev Twitter</span><span class="tag">Hackathons</span></div>
+        <div class="kv mt-2"><span class="kv-key">Message register</span><span class="kv-val muted">Technical · credibility-first</span></div>
+        <div class="kv"><span class="kv-key">Key proof</span><span class="kv-val muted">Powers Coinbase, MetaMask, Phantom</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       12-WEEK MEDIA PLAN
+  ════════════════════════════════════════════ -->
+  <section class="section" id="mediaplan">
+    <div class="sec-eyebrow">12-week media plan</div>
+    <h2 class="sec-title">Four phases, one story arc</h2>
+    <p class="sec-sub">The campaign follows a classic narrative structure: create tension (Ignite) → deliver the answer (Amplify) → drive action (Convert) → build belonging (Sustain). Proof points enter progressively, heaviest in Phase 3.</p>
+
+    <div class="mb-3">
+      <div class="phase-wrap">
+        <div class="phase-row"><span>Phase 1 · Ignite · Wks 1–3</span><span class="muted small">Teaser + brand reveal</span></div>
+        <div class="phase-track"><div class="phase-seg" style="width:25%;background:#1D9E75;"></div><div style="flex:1;"></div></div>
+      </div>
+      <div class="phase-wrap">
+        <div class="phase-row"><span>Phase 2 · Amplify · Wks 4–7</span><span class="muted small">Full media push · paid + earned</span></div>
+        <div class="phase-track"><div style="width:25%;"></div><div class="phase-seg" style="width:34%;background:#534AB7;"></div><div style="flex:1;"></div></div>
+      </div>
+      <div class="phase-wrap">
+        <div class="phase-row"><span>Phase 3 · Convert · Wks 8–10</span><span class="muted small">Performance + retargeting</span></div>
+        <div class="phase-track"><div style="width:59%;"></div><div class="phase-seg" style="width:25%;background:#BA7517;"></div><div style="flex:1;"></div></div>
+      </div>
+      <div class="phase-wrap">
+        <div class="phase-row"><span>Phase 4 · Sustain · Wks 11–12</span><span class="muted small">Community + loyalty</span></div>
+        <div class="phase-track"><div style="width:84%;"></div><div class="phase-seg" style="width:16%;background:#0F6E56;"></div></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+
+      <div class="card">
+        <span class="badge badge-green mb-2" style="display:inline-block;">Phase 1 · Ignite · Wks 1–3</span>
+        <div class="card-title">Teaser + brand drop</div>
+        <div style="margin-top:.75rem;">
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:.6rem;">
+            <span class="concept-num">1</span>
+            <span class="card-body">Drop cryptic teaser visuals — astronaut silhouette only. "Something is coming." No logo, no name. Create tension before the answer.</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:.6rem;">
+            <span class="concept-num">2</span>
+            <span class="card-body">Twitter/X: #JumpAnywhere hashtag seeded simultaneously via 10 crypto-native KOLs 48h before the reveal.</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <span class="concept-num">3</span>
+            <span class="card-body">Reveal week: hero video drop, full visual system, all 6 channels live within 24h.</span>
+          </div>
+        </div>
+        <div class="tag-strip mt-2"><span class="tag">Twitter/X organic</span><span class="tag">Discord</span><span class="tag">KOL seeding</span></div>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-purple mb-2" style="display:inline-block;">Phase 2 · Amplify · Wks 4–7</span>
+        <div class="card-title">Full media blitz</div>
+        <div style="margin-top:.75rem;">
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:.6rem;">
+            <span class="concept-num">1</span>
+            <span class="card-body">Twitter/X promoted posts — 3 creative variants A/B tested per segment. Daily at peak hours (9am EST, 2pm EST).</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:.6rem;">
+            <span class="concept-num">2</span>
+            <span class="card-body">YouTube pre-roll: 15s "The Route Finder" motion spot. Skip-optimised hook in first 5 seconds — astronaut visual, $33B number.</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <span class="concept-num">3</span>
+            <span class="card-body">Crypto media (Bankless, The Defiant, Decrypt) sponsored editorial + display. Content angle: "The $33B aggregator you haven't tried yet."</span>
+          </div>
+        </div>
+        <div class="tag-strip mt-2"><span class="tag">Paid social</span><span class="tag">YouTube</span><span class="tag">Crypto media</span></div>
+        <div class="proof-strip mt-2">
+          <div class="proof-strip-label">Proof point active this phase</div>
+          <div class="proof-strip-text"><strong>$33B+ total volume</strong> and <strong>4× audited</strong> contracts surface in all paid creative to establish credibility before the conversion ask.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-amber mb-2" style="display:inline-block;">Phase 3 · Convert · Wks 8–10</span>
+        <div class="card-title">Performance layer</div>
+        <div style="margin-top:.75rem;">
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:.6rem;">
+            <span class="concept-num">1</span>
+            <span class="card-body">Retarget site visitors with "Find your route" direct-response ads. Savings calculator CTA. Personalised by chain activity if possible.</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:.6rem;">
+            <span class="concept-num">2</span>
+            <span class="card-body">Loyalty Pass urgency layer: "Earn your first XP today" — overlaid on brand awareness to drive first transaction.</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <span class="concept-num">3</span>
+            <span class="card-body">CoinGecko + DappRadar sponsored listing placement during campaign peak week (Week 9).</span>
+          </div>
+        </div>
+        <div class="tag-strip mt-2"><span class="tag">Retargeting</span><span class="tag">DappRadar</span><span class="tag">CoinGecko</span></div>
+        <div class="proof-strip mt-2">
+          <div class="proof-strip-label">Proof points heaviest this phase</div>
+          <div class="proof-strip-text"><strong>127,000 wallets · $1.36B in January 2026 · 41% of volume from $100k+ swaps.</strong> Whale signal creates urgency: if institutional-scale users trust it, individual users can too.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-green mb-2" style="display:inline-block;">Phase 4 · Sustain · Wks 11–12</span>
+        <div class="card-title">Community + IRL</div>
+        <div style="margin-top:.75rem;">
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:.6rem;">
+            <span class="concept-num">1</span>
+            <span class="card-body">Discord community event: "Jump Challenge" — swap competition with Loyalty Pass XP prizes. Caps off the campaign with an activation that rewards existing users.</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:.6rem;">
+            <span class="concept-num">2</span>
+            <span class="card-body">ETHGlobal / TOKEN2049 side event: OOH billboard mockup activation + astronaut branded merch drops to first 500 attendees.</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <span class="concept-num">3</span>
+            <span class="card-body">Always-on organic content calendar continues post-campaign using the full 30-day visual system developed here.</span>
+          </div>
+        </div>
+        <div class="tag-strip mt-2"><span class="tag">Discord events</span><span class="tag">IRL / OOH</span><span class="tag">Merch</span></div>
+        <div class="proof-strip mt-2">
+          <div class="proof-strip-label">Proof point active this phase</div>
+          <div class="proof-strip-text"><strong>1 million wallets across two Loyalty Pass seasons</strong> — cited in community comms to show existing community scale to new joiners.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CHANNEL BREAKDOWN
+  ════════════════════════════════════════════ -->
+  <section class="section" id="channels">
+    <div class="sec-eyebrow">Channel breakdown</div>
+    <h2 class="sec-title">Where the budget goes</h2>
+    <p class="sec-sub">Six channels, each with a distinct role in the funnel. Twitter/X is the primary awareness and conversion engine. Every channel uses the same visual system.</p>
+
+    <div class="card mb-3">
+      <div class="channel-row">
+        <div class="channel-icon">𝕏</div>
+        <div style="flex:1;">
+          <div class="channel-name">Twitter/X paid</div>
+          <div class="channel-detail">Hero awareness + performance DRO. Primary channel. 3 variants A/B tested per segment. Peak hours targeting. Retargeting layer in Phase 3.</div>
+        </div>
+        <div class="channel-pct">40%</div>
+      </div>
+      <div class="channel-row">
+        <div class="channel-icon">▶</div>
+        <div style="flex:1;">
+          <div class="channel-name">YouTube pre-roll</div>
+          <div class="channel-detail">15s skip-optimised spot. Segment B (chain curious) primary reach vehicle. Astronaut visual + $33B number in first 3 seconds to beat the skip.</div>
+        </div>
+        <div class="channel-pct">20%</div>
+      </div>
+      <div class="channel-row">
+        <div class="channel-icon">📰</div>
+        <div style="flex:1;">
+          <div class="channel-name">Crypto media</div>
+          <div class="channel-detail">Bankless, The Defiant, Decrypt sponsored editorial + display. Content angle: "The $33B aggregator you haven't tried yet." Native editorial format performs 3× vs display alone.</div>
+        </div>
+        <div class="channel-pct">15%</div>
+      </div>
+      <div class="channel-row">
+        <div class="channel-icon">👥</div>
+        <div style="flex:1;">
+          <div class="channel-name">KOL / influencer</div>
+          <div class="channel-detail">10 crypto-native creators. Seeding #JumpAnywhere 48h before reveal. Amplification during Phase 2 peak. Briefed on proof points — volume, fees, security.</div>
+        </div>
+        <div class="channel-pct">10%</div>
+      </div>
+      <div class="channel-row">
+        <div class="channel-icon">🔍</div>
+        <div style="flex:1;">
+          <div class="channel-name">Listings (CoinGecko, DappRadar)</div>
+          <div class="channel-detail">Sponsored placement during convert phase (Week 9 peak). High-intent audience already comparing platforms — conversion rate typically 4–8× vs social.</div>
+        </div>
+        <div class="channel-pct">10%</div>
+      </div>
+      <div class="channel-row" style="border-bottom:none;">
+        <div class="channel-icon">🏙</div>
+        <div style="flex:1;">
+          <div class="channel-name">IRL / OOH</div>
+          <div class="channel-detail">ETHGlobal, TOKEN2049, Consensus events. Billboard mockup activation using generated OOH asset. Branded astronaut merch for first 500 attendees.</div>
+        </div>
+        <div class="channel-pct">5%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       VIDEO CONCEPTS
+  ════════════════════════════════════════════ -->
+  <section class="section" id="concepts">
+    <div class="sec-eyebrow">Video concepts</div>
+    <h2 class="sec-title">5 high-retention concepts</h2>
+    <p class="sec-sub">Each concept uses the same structural mechanic: visual confusion → satisfying clarity. The problem is shown viscerally before Jumper arrives as the resolution. Select 2–3 for production.</p>
+
+    <div class="grid-2">
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;">
+          <span class="concept-num">01</span>
+          <span class="badge badge-green">Hero awareness</span>
+        </div>
+        <div class="card-title">The Airport with No Signs</div>
+        <div class="card-body mt-1">An international airport — dozens of terminals, no signs, no directions. A traveler spins, passport in hand, completely lost. Then a single path lights up underfoot, leading directly to the gate.</div>
+        <div class="quote-block mt-2">
+          <div class="quote-text" style="font-size:.95rem;">"That's Jumper. Any token. Any chain. One route."</div>
+          <div class="quote-sub">Analogy: Google Maps for your crypto.</div>
+        </div>
+        <div class="tag-strip mt-2"><span class="tag">30s</span><span class="tag">Awareness</span><span class="tag">All segments</span></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;">
+          <span class="concept-num">02</span>
+          <span class="badge badge-blue">Earn feature</span>
+        </div>
+        <div class="card-title">The Chef Who Shops at 12 Markets</div>
+        <div class="card-body mt-1">A chef running between 12 grocery markets — sweating, losing ingredients, late. That's every DeFi user managing yield manually. Then one supplier delivers everything optimised. The chef just cooks.</div>
+        <div class="quote-block mt-2">
+          <div class="quote-text" style="font-size:.95rem;">"Jumper Earn. Your yield, personalised and ready."</div>
+          <div class="quote-sub">Show the "For You" feed: wallet activity, risk appetite, idle assets.</div>
+        </div>
+        <div class="tag-strip mt-2"><span class="tag">30s</span><span class="tag">Earn feature</span><span class="tag">Segment A</span></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;">
+          <span class="concept-num">03</span>
+          <span class="badge badge-purple">Security trust</span>
+        </div>
+        <div class="card-title">The Monster in the Middle</div>
+        <div class="card-body mt-1">Two hands reaching across a gap — a dark void between them eating dollar signs. Bridges have been crypto's most-hacked layer. The void shrinks. Hands connect. Route shown with fees and security flags.</div>
+        <div class="quote-block mt-2">
+          <div class="quote-text" style="font-size:.95rem;">"Jumper finds the safest, cheapest route — automatically."</div>
+          <div class="quote-sub">Show audit badges. Reinforce: 4× audited by Spearbit, Code4rena, Quantstamp.</div>
+        </div>
+        <div class="tag-strip mt-2"><span class="tag">30s</span><span class="tag">Security</span><span class="tag">Segment B</span></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;">
+          <span class="concept-num">04</span>
+          <span class="badge badge-amber">Idle capital</span>
+        </div>
+        <div class="card-title">Your Money Is Sleeping</div>
+        <div class="card-body mt-1">Dollar bills tucked under a pillow, snoring. Alarm goes off — nothing moves. Then the money wakes up, floats into vaults. Numbers climbing: 80%, 50%, 350% APY. Honest framing — not hype, just opportunity.</div>
+        <div class="quote-block mt-2">
+          <div class="quote-text" style="font-size:.95rem;">"Jumper Earn. Your idle capital shouldn't be sleeping."</div>
+          <div class="quote-sub">Reference live pools: Yearn USDC 80% APY, Spectra vbUSDC 350% APY.</div>
+        </div>
+        <div class="tag-strip mt-2"><span class="tag">30s</span><span class="tag">Earn / yield</span><span class="tag">Segment A + B</span></div>
+      </div>
+
+      <div class="card" style="grid-column: 1 / -1;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;">
+          <span class="concept-num">05</span>
+          <span class="badge badge-gray">Portfolio feature</span>
+        </div>
+        <div class="card-title">The Scoreboard You Never Knew Existed</div>
+        <div class="card-body mt-1">A sports fan watching a game — scoreboard blank. No stats, no score. Just vibes. Most portfolio trackers let you watch. Jumper Portfolio lets you act: live positions, cross-chain, in/out buttons, yield visible.</div>
+        <div class="quote-block mt-2">
+          <div class="quote-text" style="font-size:.95rem;">"Jumper Portfolio. Stop watching. Start playing."</div>
+          <div class="quote-sub">Analogy: the difference between watching chess on TV and actually moving the pieces. Show Portfolio UI with direct deposit/withdrawal capability.</div>
+        </div>
+        <div class="tag-strip mt-2"><span class="tag">30s</span><span class="tag">Portfolio feature</span><span class="tag">Segment A</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       30-DAY CONTENT PLAN
+  ════════════════════════════════════════════ -->
+  <section class="section" id="content30">
+    <div class="sec-eyebrow">30-day content system</div>
+    <h2 class="sec-title">Daily content — four weeks of strategy</h2>
+    <p class="sec-sub">30 days of content mapped to a deliberate arc: awareness → education → proof → identity. Click any week to expand, then any day to see the full brief.</p>
+
+    <div class="grid-4 mb-3">
+      <div class="metric-card"><span class="metric-val">7</span><span class="metric-label">Awareness posts</span></div>
+      <div class="metric-card"><span class="metric-val">7</span><span class="metric-label">Education posts</span></div>
+      <div class="metric-card"><span class="metric-val">7</span><span class="metric-label">Proof posts</span></div>
+      <div class="metric-card"><span class="metric-val">9</span><span class="metric-label">Identity posts</span></div>
+    </div>
+
+    <!-- WEEK 1 -->
+    <div class="week-block">
+      <div class="week-header" onclick="toggleWeek(this)">
+        <div class="week-header-left">
+          <span class="week-num">Week 1</span>
+          <div>
+            <div class="week-title">Awareness — make the problem visceral</div>
+            <div class="week-sub">Goal: make DeFi fragmentation feel real. Position Jumper as the obvious fix.</div>
+          </div>
+        </div>
+        <span class="week-chevron">▼</span>
+      </div>
+      <div class="week-body">
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D01</span>
+            <span class="day-hook">"I lost 4 hours yesterday just trying to move ETH to Solana."</span>
+            <span class="day-format">Screen record</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">DeFi is incredible technology trapped inside a terrible experience. Jumper fixes the experience.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Screen recording of user bouncing between 6 browser tabs — MetaMask, bridge UI, DEX, DEX #2, gas tracker, price tracker. No narration. Just the chaos.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Dark UI · multiple screens · overwhelmed · fluorescent desk lighting · fast cuts</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Question answered</div><div class="day-detail-val">What is the actual problem Jumper solves?</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#DeFiFragmentation</span><span class="hashtag">#CrossChainSwap</span><span class="hashtag">#CryptoUX</span><span class="hashtag">#JumperXYZ</span><span class="hashtag">#Web3Problems</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D02</span>
+            <span class="day-hook">"Everyone calls it an exchange. Everyone calls it a bridge. They're both right."</span>
+            <span class="day-format">Split screen</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">It's not a bridge. It's not a DEX. It's both — and everything between them.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Split screen: left shows traditional bridge UI (basic, rigid). Right shows Jumper routing through multiple paths simultaneously. Right side wins cleanly.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Blue vs purple lighting · minimalist UI comparison · side-by-side contrast · clean typography</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Question answered</div><div class="day-detail-val">Is Jumper a bridge, an exchange, or both?</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#DEXAggregator</span><span class="hashtag">#BridgeAggregator</span><span class="hashtag">#DeFiHub</span><span class="hashtag">#JumperExchange</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D03</span>
+            <span class="day-hook">"The best yield isn't on your chain. It never was."</span>
+            <span class="day-format">Metaphor visual</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Your chain is one room in a mansion. Jumper hands you the keys to all of them.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Aerial shot of a massive house. Camera enters through one tiny window (your current chain). Front door swings open — the entire mansion visible. Metaphor fully visualised.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Wide architecture shots · door opening motif · warm amber lighting · mansion interior</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">25+ chains supported including ETH, ARB, POL, AVAX, BNB, SOL</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#MultiChainDeFi</span><span class="hashtag">#YieldFarming</span><span class="hashtag">#JumperXYZ</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D04</span>
+            <span class="day-hook">"You don't hand your keys to a valet you've never met. So why do it with crypto?"</span>
+            <span class="day-format">Metaphor visual</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Jumper is a DEX. No custody. No held funds. Just smart contracts doing the work.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Person hands car keys to a valet — then immediately reconsiders and takes them back. Uses a self-park app instead. Clean, confident, no drama.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Urban parking garage · nighttime neon · confident body language · self-directed motion</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Question answered</div><div class="day-detail-val">Does Jumper hold my money?</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#SelfCustody</span><span class="hashtag">#NonCustodial</span><span class="hashtag">#DeFiSafety</span><span class="hashtag">#CryptoSecurity</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D05</span>
+            <span class="day-hook">"127,000 wallets. $1.36 billion. One month. January 2026."</span>
+            <span class="day-format">Data visual</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">This isn't a niche product anymore. Smart money found it. The question is whether you did.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Timelapse of a city lighting up at night — each light represents an activating wallet. Counter in corner ticking up to 127,000.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">City timelapse · purple/blue glow · counter UI overlay · kinetic energy · scale reveal</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">127,000 wallets / $1.36B — January 2026 data</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#DeFiVolume</span><span class="hashtag">#CryptoData</span><span class="hashtag">#JumperStats</span><span class="hashtag">#SmartMoney</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D06</span>
+            <span class="day-hook">"Jumper doesn't just find a route. It finds THE route."</span>
+            <span class="day-format">Route visualisation</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">20+ DEXes. 23 bridges. Scanned simultaneously. You don't pick. It does.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">GPS rerouting in real time — multiple paths light up, dim out, one glows green. Then the Jumper interface doing exactly this with real tokens.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Route mapping aesthetic · green path · data visualisation · neon grid · real UI footage</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Question answered</div><div class="day-detail-val">How does Jumper find the best route automatically?</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#BestRoute</span><span class="hashtag">#CrossChainDeFi</span><span class="hashtag">#GasFees</span><span class="hashtag">#JumperXYZ</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D07</span>
+            <span class="day-hook">"Two platforms. Same idea. Completely different trajectory."</span>
+            <span class="day-format">Contrast visual</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Jumper isn't just growing faster. Earn and Portfolio put it in a different category entirely.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Two-lane road. One car stays straight. The other accelerates, changes lanes, expands into a highway. No names shown — visuals only, implication clear.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Aerial highway · acceleration motion blur · split path · speed lines</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">Jumper shows faster and bigger growth in newly supported chains vs competitors</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#DeFiComparison</span><span class="hashtag">#BridgeAggregator</span><span class="hashtag">#JumperExchange</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- WEEK 2 -->
+    <div class="week-block">
+      <div class="week-header" onclick="toggleWeek(this)">
+        <div class="week-header-left">
+          <span class="week-num">Week 2</span>
+          <div>
+            <div class="week-title">Education — teach the three pillars</div>
+            <div class="week-sub">Goal: explain Swap, Earn, and Portfolio in concrete, visual terms.</div>
+          </div>
+        </div>
+        <span class="week-chevron">▼</span>
+      </div>
+      <div class="week-body">
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D08</span>
+            <span class="day-hook">"Select a token. Pick a chain. That's it. Jumper handles the rest."</span>
+            <span class="day-format">Tutorial / demo</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">The complexity is under the hood. The experience is surprisingly simple.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Screen capture walkthrough — wallet connected, ETH on Base selected, BNB as destination. Route appears. Fee shown. One click. Done. Text overlays only, no voiceover.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Clean screen recording · minimal UI · bold text overlays · Jumper palette</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Question answered</div><div class="day-detail-val">How do I actually do a cross-chain swap on Jumper?</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#HowToSwap</span><span class="hashtag">#DeFiTutorial</span><span class="hashtag">#CrossChain</span><span class="hashtag">#CryptoBeginners</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D09</span>
+            <span class="day-hook">"Most yield platforms show you everything. Jumper shows you what's right for you."</span>
+            <span class="day-format">Phone comparison</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Your wallet activity isn't just history. It's intelligence. Earn reads it.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Two phones side by side: left shows generic yield list (hundreds of options, no filter). Right shows Jumper's "For You" feed — 5 ranked, personalised suggestions. Person finds what they need immediately.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Key detail</div><div class="day-detail-val">The "For You" feed uses: wallet activity, holdings, liquidity size, idle assets, preferred chains, risk appetite</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Question answered</div><div class="day-detail-val">What is Jumper Earn and why is it "personalised"?</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#JumperEarn</span><span class="hashtag">#PersonalisedDeFi</span><span class="hashtag">#DeFiYield</span><span class="hashtag">#OnChainEarning</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D10</span>
+            <span class="day-hook">"350%. 80%. 50%. These aren't promises. These were live pools."</span>
+            <span class="day-format">Data cards</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">APY screenshots age poorly. Onchain proof doesn't.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Clean data card animations — vault names, APY numbers rolling up. Cut to blockchain explorer showing actual transactions. Grounded, not hype.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">Spectra vbUSDC 350% APY · Yearn USDC 80% APY · Yearn AUSD 50% APY (January 2026 live pools)</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Data card UI · green numerics · dark background · blockchain explorer aesthetic</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#APY</span><span class="hashtag">#YieldFarming</span><span class="hashtag">#DeFiEarn</span><span class="hashtag">#JumperEarn</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D11</span>
+            <span class="day-hook">"Bridge. Swap. Deposit into yield. Three steps. Now it's one."</span>
+            <span class="day-format">Collapse animation</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">The reason most people don't use DeFi yield isn't fear. It's friction. Composer removes friction.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Slow-motion collapse of three separate browser windows into a single clean interface. Sound design: three clicks becoming one satisfying click.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Feature</div><div class="day-detail-val">Composer — powered by LI.FI: bridge, swap, deposit in one transaction</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Motion collapse animation · purple/white UI · satisfying sound design</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#JumperComposer</span><span class="hashtag">#DeFiSimplified</span><span class="hashtag">#CrossChainYield</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D12</span>
+            <span class="day-hook">"Most portfolio trackers let you watch. Jumper lets you act."</span>
+            <span class="day-format">Contrast / analogy</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">A dashboard that can't execute is just a pretty report. Portfolio bridges the gap.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Football coach watching film (passive) vs same coach on field calling plays (active). Cut to Portfolio UI showing positions with direct action buttons — withdraw, redeploy.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Key differentiator</div><div class="day-detail-val">Unlike most portfolio trackers, Jumper Portfolio lets users act — not just view</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Sports analogy · sideline vs field · bold action buttons in UI</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#JumperPortfolio</span><span class="hashtag">#DeFiPortfolio</span><span class="hashtag">#CrossChainPortfolio</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D13</span>
+            <span class="day-hook">"Ethereum. Arbitrum. Polygon. Avalanche. BNB. Solana. And 20 more."</span>
+            <span class="day-format">Animated globe</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">If a chain matters in DeFi right now, Jumper is probably already there.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Animated world map — blockchain logos lighting up one by one across a dark globe. Ends with all 25+ chains glowing simultaneously. No voiceover. Music only.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Dark globe · chain logos · pulse animation · purple neon · scale reveal</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Question answered</div><div class="day-detail-val">What chains does Jumper support?</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#MultiChain</span><span class="hashtag">#Solana</span><span class="hashtag">#Arbitrum</span><span class="hashtag">#JumperXYZ</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D14</span>
+            <span class="day-hook">"Jumper takes $0 in fees. The routes do the rest."</span>
+            <span class="day-format">Receipt UI mockup</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">The business model that aligns with users: Jumper doesn't clip your trade.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Receipt appears on screen — itemised. Gas fee shown. Bridge fee shown. Jumper fee: $0. Bold. Underlined. Receipt tears cleanly. Elegant.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">Jumper charges zero platform fees — only standard network and bridge provider fees apply</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Receipt UI mockup · clean typographic motion · white on dark</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#ZeroFees</span><span class="hashtag">#DeFiCosts</span><span class="hashtag">#GasFees</span><span class="hashtag">#JumperExchange</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- WEEK 3 -->
+    <div class="week-block">
+      <div class="week-header" onclick="toggleWeek(this)">
+        <div class="week-header-left">
+          <span class="week-num">Week 3</span>
+          <div>
+            <div class="week-title">Proof — kill skepticism with evidence</div>
+            <div class="week-sub">Goal: social proof, data, real outcomes. Every post is verifiable.</div>
+          </div>
+        </div>
+        <span class="week-chevron">▼</span>
+      </div>
+      <div class="week-body">
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D15</span>
+            <span class="day-hook">"The contracts behind Jumper have been audited by 3 independent security firms."</span>
+            <span class="day-format">Trust / security</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Trust in DeFi is earned through transparency, not promises.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Close-up of a safe being opened — inside: audit certificates, code, security firm logos. Not flashy. Serious. Professional.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">Audited by Spearbit, Code4rena, and Quantstamp — 3 independent security firms</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Safe door motif · warm serious tone · document close-ups · security iconography</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#DeFiSecurity</span><span class="hashtag">#SmartContractAudit</span><span class="hashtag">#Quantstamp</span><span class="hashtag">#CryptoSafety</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D16</span>
+            <span class="day-hook">"$24 billion moved. The number that makes this a serious conversation."</span>
+            <span class="day-format">Counter animation</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Volume is the honest metric in DeFi. Trust the transaction history, not the marketing.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Digital counter slowly counting upward — stopping at $24,000,000,000. No fluff. No graphics. Just the number and a clean background. Hold for 3 seconds.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">$24B+ total liquidity moved through Jumper since launch (March 2023)</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Minimal counter animation · white on black · monospace font · weight and stillness</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#DeFiVolume</span><span class="hashtag">#CryptoMetrics</span><span class="hashtag">#OnChainProof</span><span class="hashtag">#JumperStats</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D17</span>
+            <span class="day-hook">"41% of Jumper's volume now comes from swaps over $100,000."</span>
+            <span class="day-format">Whale signal</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Whales don't use products they don't trust. They don't have to.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Underwater shot — small fish schooling, then a large whale cuts through calmly, intentionally. Text overlay: "41% of monthly volume = $100k+ trades." Serious tone.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">Swaps over $100k represent 41% of monthly volume — up from 29% (January 2026)</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Underwater macro · blue whale · depth and scale · data overlay</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#WhaleActivity</span><span class="hashtag">#InstitutionalDeFi</span><span class="hashtag">#JumperExchange</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D18</span>
+            <span class="day-hook">"1 million wallets didn't join the Loyalty Pass for nothing."</span>
+            <span class="day-format">Particle scale</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Participation isn't a guarantee. But ignoring a million-wallet community is a choice.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">One million dots filling a screen — each dot a wallet. Slow build. Scale becomes obvious. Then one dot highlighted in the centre: it's you.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">1 million participating wallets across two Loyalty Pass seasons</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Particle animation · purple dot field · scale reveal · intimate zoom at end</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#JumperPass</span><span class="hashtag">#LoyaltyRewards</span><span class="hashtag">#DeFiRewards</span><span class="hashtag">#JumperCommunity</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D19</span>
+            <span class="day-hook">"The first week of Earn: vaults flooded with capital. APYs you'd screenshot."</span>
+            <span class="day-format">Time-lapse</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Early adopters in DeFi earn more. That's not advice. That's a pattern.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Time-lapse of a vault filling — water filling a glass, slowing as it reaches the top. APY counter ticking down as TVL fills. Honest framing — shows opportunity window closing, not hype.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Filling glass metaphor · satisfying water motion · counter overlay · honest tension</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">Jumper Earn launched with 110+ yield pools from 15 DeFi protocols</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#EarlyAdopter</span><span class="hashtag">#JumperEarn</span><span class="hashtag">#DeFiYield</span><span class="hashtag">#TVL</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D20</span>
+            <span class="day-hook">"EVM was phase one. Solana changes the game."</span>
+            <span class="day-format">Bridge metaphor</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">The best DeFi aggregator just got access to the fastest blockchain. Think about that.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">A bridge being built in real time — two cliffs (EVM ecosystem and Solana) being connected. The final piece clicks in. Simple, satisfying, symbolic.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">Jumper is now live on Solana — extending beyond EVM chains</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Bridge construction · two-world motif · clean connect animation · architecture metaphor</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#JumperSolana</span><span class="hashtag">#Solana</span><span class="hashtag">#CrossChain</span><span class="hashtag">#DeFiBridge</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D21</span>
+            <span class="day-hook">"Slower market conditions. $1.36B moved anyway. January 2026."</span>
+            <span class="day-format">Chart contrast</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">When the market slows down, weak platforms collapse. Strong ones show their floor.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Market chart (unlabelled, generic) dipping. Jumper volume bar staying steady then rising. Juxtaposition without names — implied contrast reads clearly.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">$1.36B in January 2026 — strong volume performance despite slower market conditions</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Chart analytics aesthetic · dip vs stability contrast · dark mode UI · neutral authority</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#DeFiData</span><span class="hashtag">#CryptoMarket</span><span class="hashtag">#JumperVolume</span><span class="hashtag">#OnChainAnalytics</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- WEEK 4 -->
+    <div class="week-block">
+      <div class="week-header" onclick="toggleWeek(this)">
+        <div class="week-header-left">
+          <span class="week-num">Week 4</span>
+          <div>
+            <div class="week-title">Identity — turn users into advocates</div>
+            <div class="week-sub">Goal: community, belonging, the "Jumper person." Build the tribe.</div>
+          </div>
+        </div>
+        <span class="week-chevron">▼</span>
+      </div>
+      <div class="week-body">
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D22</span>
+            <span class="day-hook">"You're not a tourist in DeFi. You're a resident. This is built for you."</span>
+            <span class="day-format">Identity contrast</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Jumper isn't built for the casual observer. It's built for the person who takes their onchain activity seriously.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Contrast: tourist with paper map, confused, asking for help vs local who walks directly to destination without hesitation. No words. Just posture and energy.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Urban street · confident stride · local vs tourist contrast · warm golden hour light</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Tone</div><div class="day-detail-val">Aspirational identity — make the audience want to be the local</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#DeFiNative</span><span class="hashtag">#CryptoNative</span><span class="hashtag">#OnChainLife</span><span class="hashtag">#PowerUser</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D23</span>
+            <span class="day-hook">"Smart money doesn't move more. It moves better."</span>
+            <span class="day-format">Philosophy visual</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Volume is vanity. Efficiency is what compounds.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Two chess players. One moving many pieces frantically (chaotic). One making one precise move, leaning back. Checkmate in 3. Visual philosophy — not speed, precision.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Chess overhead shot · deliberate motion · calm confidence · natural light · wooden board texture</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Brand tie-in</div><div class="day-detail-val">Jumper: fast swaps, capital deployment, portfolio management — all in one interface</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#SmartMoney</span><span class="hashtag">#DeFiStrategy</span><span class="hashtag">#OnChainEfficiency</span><span class="hashtag">#JumperXYZ</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D24</span>
+            <span class="day-hook">"XP isn't just points. It's a record of how serious you are."</span>
+            <span class="day-format">Identity / passport</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">The Loyalty Pass is a ledger. Of engagement. Of early adoption. Of trust built onchain.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">A passport filling with stamps — each stamp represents a transaction, a mission, a chain interacted with. Final page: full. A sense of accomplishment and identity.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Passport stamps metaphor · tactile texture · travel and identity · progressively filled pages</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">Loyalty Pass rewards: exclusive access, airdrops, better yield, IRL event perks</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#JumperPass</span><span class="hashtag">#DeFiXP</span><span class="hashtag">#CryptoIdentity</span><span class="hashtag">#OnChainHistory</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D25</span>
+            <span class="day-hook">"DeFi used to mean lurking on Discord waiting for alpha. Now it's structured."</span>
+            <span class="day-format">Mission briefing</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Missions aren't tasks. They're guided access to the best opportunities in DeFi.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Briefing room aesthetic — missions displayed on screen, objectives clear. User accepts, completes, earns. Game-like energy but grounded in real DeFi activity.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Mission briefing aesthetic · dark UI · clean typography · mission accepted animation</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">Users earn XP by transacting and participating in Jumper Missions</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#JumperMissions</span><span class="hashtag">#DeFiMissions</span><span class="hashtag">#XPFarming</span><span class="hashtag">#OnChainQuests</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D26</span>
+            <span class="day-hook">"Your portfolio has sleeping money. Jumper Earn woke mine up."</span>
+            <span class="day-format">Coin motion</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">The most expensive thing in DeFi isn't bad trades. It's unused capital.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Extreme close-up of coins stacked still. Clock ticking. Then coins start moving — flowing into a stream, entering vaults. Time-lapse of value in motion.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Coin macro · motion contrast · vault portal metaphor · kinetic energy</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Feature</div><div class="day-detail-val">Earn's "For You" feed surfaces idle asset opportunities automatically</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#IdleCapital</span><span class="hashtag">#DeFiYield</span><span class="hashtag">#JumperEarn</span><span class="hashtag">#PutMoneyToWork</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D27</span>
+            <span class="day-hook">"The UI is for beginners. The routing is for professionals. Both deserve it."</span>
+            <span class="day-format">Dual POV</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Complexity shouldn't require a PhD. Good design democratises access.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Split POV — same Jumper screen, two users: a 22-year-old new to DeFi (focused on simplicity) and a 35-year-old power user (focused on routes and data). Both satisfied.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Dual perspective · generational contrast · shared product · universal design motif</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Source backing</div><div class="day-detail-val">Jumper is described as easy to navigate even for those new to DeFi</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#DeFiForAll</span><span class="hashtag">#CryptoAccessibility</span><span class="hashtag">#JumperUX</span><span class="hashtag">#UserExperience</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D28</span>
+            <span class="day-hook">"They went from swap-only to smart money app in 12 months. Watch what comes next."</span>
+            <span class="day-format">Product timeline</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">Roadmap promises are cheap. Shipped features aren't.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Product evolution timeline — three phases as clean UI screenshots: Swap only → Swap + Earn → Swap + Earn + Portfolio. Final frame: open space with a question mark. Invitation.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Product timeline · evolution diagram · clean UI progression · forward momentum</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">Jumper transformed from swap-only interface into a complete DeFi smart money app</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#JumperRoadmap</span><span class="hashtag">#DeFiFuture</span><span class="hashtag">#ProductEvolution</span><span class="hashtag">#BuildingInPublic</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D29</span>
+            <span class="day-hook">"Tell them it's Google Maps. But for money moving between blockchains."</span>
+            <span class="day-format">Human moment</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">The best products don't need a 10-minute explainer. One sentence. That's the bar.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">Someone on the phone, explaining something complex. They pause. Smile. Say the one-liner. The other person gets it immediately. Simple human moment.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">Natural conversation · phone call close-up · reaction moment · human warmth · casual setting</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">The one-liner</div><div class="day-detail-val">"It's Google Maps for your crypto — you say where you want to go, it figures out every turn."</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#CryptoExplained</span><span class="hashtag">#DeFiSimple</span><span class="hashtag">#JumperXYZ</span><span class="hashtag">#ExplainCrypto</span></div>
+          </div>
+        </div>
+
+        <div class="day-row" onclick="toggleDay(this)">
+          <div class="day-row-header">
+            <span class="day-num-badge mono">D30</span>
+            <span class="day-hook">"You've been watching. 127,000 wallets are already inside."</span>
+            <span class="day-format">High dive metaphor</span>
+            <span class="day-chevron">▼</span>
+          </div>
+          <div class="day-detail">
+            <div class="day-detail-grid">
+              <div class="day-detail-item"><div class="day-detail-label">Caption</div><div class="day-detail-val caption">The best time to explore a platform is before everyone else does. That window is closing.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual direction</div><div class="day-detail-val">A person standing at the edge of a high dive — looking down, nervous. Then they jump. Clean entry. Underwater silence. Surface grinning. Make. The. Jump.</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Visual keywords</div><div class="day-detail-val">High dive metaphor · slow motion water entry · quiet confidence · purple tint underwater · euphoric surface</div></div>
+              <div class="day-detail-item"><div class="day-detail-label">Proof point</div><div class="day-detail-val">127,000 wallets in January 2026 · 1M+ Loyalty Pass holders · $33B+ volume</div></div>
+            </div>
+            <div class="hashtags"><span class="hashtag">#MakeTheJump</span><span class="hashtag">#JumperXYZ</span><span class="hashtag">#JoinDeFi</span><span class="hashtag">#JumpAnywhere</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CREATIVE FORMATS
+  ════════════════════════════════════════════ -->
+  <section class="section" id="assets-creative">
+    <div class="sec-eyebrow">Creative formats</div>
+    <h2 class="sec-title">Asset production list</h2>
+    <p class="sec-sub">Everything that needs to be produced for the full campaign. Static assets are complete (see Visual Assets section). Motion and copy assets are briefed and ready for production.</p>
+
+    <div class="grid-2 mb-3">
+      <div class="card">
+        <div class="card-label">Static — complete</div>
+        <div class="kv"><span class="kv-key">16:9 hero banner</span><span class="kv-val green">Generated ✓</span></div>
+        <div class="kv"><span class="kv-key">9:16 Twitter/X vertical</span><span class="kv-val green">Generated ✓</span></div>
+        <div class="kv"><span class="kv-key">1:1 OOH billboard mockup</span><span class="kv-val green">Generated ✓</span></div>
+        <div class="kv"><span class="kv-key">Discord/Twitter header</span><span class="kv-val green">Generated ✓</span></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Motion — briefed, ready for production</div>
+        <div class="kv"><span class="kv-key">30s hero brand film</span><span class="kv-val muted">Concept 1: The Airport</span></div>
+        <div class="kv"><span class="kv-key">15s YouTube pre-roll</span><span class="kv-val muted">Cut-down, hook-optimised</span></div>
+        <div class="kv"><span class="kv-key">6s bumper</span><span class="kv-val muted">"Jump Anywhere. jumper.xyz"</span></div>
+        <div class="kv"><span class="kv-key">Website hero loop</span><span class="kv-val muted">Chain network pulse animation</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       KPIs
+  ════════════════════════════════════════════ -->
+  <section class="section" id="kpis">
+    <div class="sec-eyebrow">KPIs and success metrics</div>
+    <h2 class="sec-title">How we measure success</h2>
+    <p class="sec-sub">Primary KPIs tracked weekly. Baseline set from January 2026 data. Secondary metrics reviewed at end of each phase.</p>
+
+    <div class="grid-4 mb-3">
+      <div class="metric-card"><span class="metric-val green">50M+</span><span class="metric-label">Impressions target</span></div>
+      <div class="metric-card"><span class="metric-val green">3.5%</span><span class="metric-label">Avg CTR goal</span></div>
+      <div class="metric-card"><span class="metric-val green">+40%</span><span class="metric-label">New wallet visits</span></div>
+      <div class="metric-card"><span class="metric-val green">Top 3</span><span class="metric-label">DeFi brand recall</span></div>
+    </div>
+
+    <div class="card">
+      <div class="kv"><span class="kv-key">Baseline volume (Jan 2026)</span><span class="kv-val">$1.36B / month · 127,000 active wallets</span></div>
+      <div class="kv"><span class="kv-key">Volume growth target</span><span class="kv-val">+25% MoM during Phase 2 peak</span></div>
+      <div class="kv"><span class="kv-key">Loyalty Pass growth</span><span class="kv-val">+100,000 new pass holders during campaign flight</span></div>
+      <div class="kv"><span class="kv-key">Social following</span><span class="kv-val">+30% Twitter/X followers over 12 weeks</span></div>
+      <div class="kv"><span class="kv-key">Whale retention</span><span class="kv-val">Maintain 41%+ share of volume from $100k+ swaps</span></div>
+      <div class="kv"><span class="kv-key">Content performance</span><span class="kv-val">Avg 5%+ engagement rate on organic posts (above crypto avg of 1.8%)</span></div>
+    </div>
+
+    <div class="proof-strip mt-3">
+      <div class="proof-strip-label">Baseline context</div>
+      <div class="proof-strip-text">
+        January 2026 established a strong floor: <strong>$1.36B moved by 127,000 wallets</strong> during a slower market period, with whale-scale swaps rising to <strong>41% of monthly volume</strong>. The campaign is designed to accelerate what's already working — not rebuild from scratch.
+      </div>
+    </div>
+
+    <div style="margin-top: 2.5rem; padding-top: 2rem; border-top: 0.5px solid var(--border);">
+      <div class="sec-eyebrow">Document info</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;font-size:12px;color:var(--text-3);">
+        <div><span style="color:var(--text-2);font-weight:500;display:block;margin-bottom:2px;">Prepared for</span>Jumper.xyz team</div>
+        <div><span style="color:var(--text-2);font-weight:500;display:block;margin-bottom:2px;">Campaign</span>Jump Anywhere · Q3 2026</div>
+        <div><span style="color:var(--text-2);font-weight:500;display:block;margin-bottom:2px;">Version</span>1.0 — complete brief</div>
+        <div><span style="color:var(--text-2);font-weight:500;display:block;margin-bottom:2px;">Visual assets</span>4 × Higgsfield AI · 2K resolution</div>
+        <div><span style="color:var(--text-2);font-weight:500;display:block;margin-bottom:2px;">Content system</span>30 days · all claims verified</div>
+        <div><span style="color:var(--text-2);font-weight:500;display:block;margin-bottom:2px;">Hashtag</span>#JumpAnywhere</div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<script>
+  /* ── NAV ACTIVE STATE ── */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const progressFill = document.getElementById('progress');
+
+  function updateNav() {
+    const scrollY = window.scrollY;
+    const docH = document.body.scrollHeight - window.innerHeight;
+    progressFill.style.width = (scrollY / docH * 100).toFixed(1) + '%';
+
+    let current = '';
+    sections.forEach(s => {
+      if (scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  /* ── WEEK ACCORDION ── */
+  function toggleWeek(header) {
+    const body = header.nextElementSibling;
+    const isOpen = header.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+  }
+
+  /* ── DAY ACCORDION ── */
+  function toggleDay(row) {
+    const detail = row.querySelector('.day-detail');
+    const isOpen = row.classList.contains('open');
+    row.classList.toggle('open', !isOpen);
+    if (detail) detail.classList.toggle('open', !isOpen);
+  }
+
+  /* ── NAV SMOOTH SCROLL ── */
+  navLinks.forEach(l => {
+    l.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(l.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
+    <script src="/script.js"></script>
+  </body>
+
+</html>
